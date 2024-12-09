@@ -1,12 +1,21 @@
-const { defineConfig } = require("cypress");
+const { prepareAudit } = require('@cypress-audit/lighthouse');
 
-module.exports = defineConfig({
+module.exports = {
   e2e: {
     setupNodeEvents(on, config) {
-      // implement node event listeners here
+      on('before:browser:launch', (browser = {}, launchOptions) => {
+        prepareAudit(launchOptions);  // Prepara la auditoría de Lighthouse
+      });
+
+      on('task', {
+        lighthouse: require('@cypress-audit/lighthouse').lighthouse,
+      });
     },
-    video: true,
-    videosFolder: 'cypress/videos',
-    pageLoadTimeout: 120000,
+    baseUrl: "https://www.amazon.com/",
+    desktopWidth: 1920,
+    desktopHeight: 1080,
+    mobileWidth: 375,
+    mobileHeight: 812,
+    supportFile: 'cypress/support/commands.js',
   },
-});
+};
