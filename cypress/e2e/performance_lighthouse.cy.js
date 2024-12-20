@@ -1,22 +1,46 @@
-describe("Lighthouse Performance Metrics - Desktop and Mobile", () => {
-  it("Captura métricas para Desktop y Mobile", () => {
-    const url = Cypress.config("baseUrl");  // Obtiene la URL base desde el archivo de configuración
-    const combinedResults = {};  // Objeto para almacenar los resultados combinados
+describe("Lighthouse", () => {
+  it("Test de Lighthouse", () => {
+    const thresholdsDektop = {
+      performance: 10,
+      'first-contentful-paint': 11800,
+      'largest-contentful-paint': 12500,
+      'total-blocking-time': 11200,
+      'cumulative-layout-shift': 0.1,
+      'speed-index': 13400,
+    };
 
-    // Visitar la URL base antes de realizar las auditorías
-    cy.visit(url);
+    const thresholdsMobile = {
+      performance: 10,
+      'first-contentful-paint': 8000,
+      'largest-contentful-paint': 10000,
+      'total-blocking-time': 4000,
+      'cumulative-layout-shift': 0.2,
+      'speed-index': 12000,
+    };
 
-    // Ejecutar pruebas para Desktop
-    cy.runLighthouseForDevice("desktop").then((desktopResults) => {
-      combinedResults.desktop = desktopResults.results;  // Guardar los resultados para Desktop
+    const lighthouseConfigDesktop = {
+      formFactor: 'desktop',
+      screenEmulation: { disabled: true }
+    };
 
-      // Ejecutar pruebas para Mobile
-      cy.runLighthouseForDevice("mobile").then((mobileResults) => {
-        combinedResults.mobile = mobileResults.results;  // Guardar los resultados para Mobile
+    const lighthouseConfigMobile = {
+      formFactor: 'mobile',
+      screenEmulation: { disabled: true }
+    };
 
-        // Guardar los resultados combinados en un solo archivo JSON
-        cy.writeFile("cypress/results/lighthouse_results.json", combinedResults);
-      });
+    // Visita la página
+    cy.visit('/');
+
+    // Ejecutar Lighthouse para Desktop
+    cy.lighthouse(thresholdsDektop, lighthouseConfigDesktop).then((desktopResults) => {
+      cy.log("Desktop Results", JSON.stringify(desktopResults));
+      cy.writeFile('cypress/fixtures/metrics-desktop.json', desktopResults);
+    });
+
+    // Ejecutar Lighthouse para Mobile
+    cy.lighthouse(thresholdsMobile, lighthouseConfigMobile).then((mobileResults) => {
+      cy.log("Mobile Results", JSON.stringify(mobileResults));
+      cy.writeFile('cypress/fixtures/metrics-mobile.json', mobileResults);
     });
   });
 });

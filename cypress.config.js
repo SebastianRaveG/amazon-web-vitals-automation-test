@@ -1,21 +1,18 @@
-const { prepareAudit } = require('@cypress-audit/lighthouse');
+const { lighthouse, prepareAudit } = require('@cypress-audit/lighthouse');
 
 module.exports = {
   e2e: {
+    baseUrl: "https://www.amazon.com/",
     setupNodeEvents(on, config) {
+      // Prepara Lighthouse para la auditoría
       on('before:browser:launch', (browser = {}, launchOptions) => {
-        prepareAudit(launchOptions);  // Prepara la auditoría de Lighthouse
+        prepareAudit(launchOptions);
       });
 
+      // Configura el task para Lighthouse
       on('task', {
-        lighthouse: require('@cypress-audit/lighthouse').lighthouse,
+        lighthouse: lighthouse(), // Correcto
       });
     },
-    baseUrl: "https://www.amazon.com/",
-    desktopWidth: 1920,
-    desktopHeight: 1080,
-    mobileWidth: 375,
-    mobileHeight: 812,
-    supportFile: 'cypress/support/commands.js',
   },
 };
