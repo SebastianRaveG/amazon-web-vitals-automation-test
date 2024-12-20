@@ -1,17 +1,17 @@
-const { lighthouse, prepareAudit } = require('@cypress-audit/lighthouse');
+const { lighthouse, prepareAudit } = require('cypress-audit');
 
 module.exports = {
   e2e: {
-    baseUrl: "https://www.amazon.com/",
+    baseUrl: 'https://www.amazon.com/',
     setupNodeEvents(on, config) {
-      // Prepara Lighthouse para la auditoría
       on('before:browser:launch', (browser = {}, launchOptions) => {
+        launchOptions.args.push('--disable-gpu'); // Desactivar la aceleración por hardware
         prepareAudit(launchOptions);
+        return launchOptions;
       });
 
-      // Configura el task para Lighthouse
       on('task', {
-        lighthouse: lighthouse(), // Correcto
+        lighthouse: lighthouse(),
       });
     },
   },

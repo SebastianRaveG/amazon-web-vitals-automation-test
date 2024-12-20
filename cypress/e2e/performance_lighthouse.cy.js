@@ -1,46 +1,55 @@
-describe("Lighthouse", () => {
-  it("Test de Lighthouse", () => {
-    const thresholdsDektop = {
-      performance: 10,
-      'first-contentful-paint': 11800,
-      'largest-contentful-paint': 12500,
-      'total-blocking-time': 11200,
+describe("Auditoría con Lighthouse", () => {
+  it("Audita el rendimiento en Desktop y Mobile", () => {
+    // Umbrales para métricas en Desktop
+    const thresholdsDesktop = {
+      performance: 50,
+      'first-contentful-paint': 3000,
+      'largest-contentful-paint': 3000,
+      'total-blocking-time': 200,
       'cumulative-layout-shift': 0.1,
-      'speed-index': 13400,
+      'speed-index': 3000,
     };
 
+    // Umbrales para métricas en Mobile
     const thresholdsMobile = {
-      performance: 10,
-      'first-contentful-paint': 8000,
-      'largest-contentful-paint': 10000,
-      'total-blocking-time': 4000,
+      performance: 50,
+      'first-contentful-paint': 4000,
+      'largest-contentful-paint': 4000,
+      'total-blocking-time': 300,
       'cumulative-layout-shift': 0.2,
-      'speed-index': 12000,
+      'speed-index': 4000,
     };
 
-    const lighthouseConfigDesktop = {
+    // Configuración para Desktop
+    const configDesktop = {
       formFactor: 'desktop',
       screenEmulation: { disabled: true }
     };
 
-    const lighthouseConfigMobile = {
+    // Configuración para Mobile
+    const configMobile = {
       formFactor: 'mobile',
       screenEmulation: { disabled: true }
     };
 
-    // Visita la página
+    // Realizar la auditoría para Desktop
     cy.visit('/');
-
-    // Ejecutar Lighthouse para Desktop
-    cy.lighthouse(thresholdsDektop, lighthouseConfigDesktop).then((desktopResults) => {
-      cy.log("Desktop Results", JSON.stringify(desktopResults));
-      cy.writeFile('cypress/fixtures/metrics-desktop.json', desktopResults);
+    cy.lighthouse(thresholdsDesktop, configDesktop).then((desktopReport) => {
+      cy.log('Resultados Desktop:', desktopReport);  // Asegúrate de que esto muestre un informe válido
+      if (desktopReport) {
+        cy.writeFile('cypress/fixtures/lighthouse-desktop.json', desktopReport);
+      } else {
+        cy.log('No se generó el informe de Desktop');
+      }
     });
 
-    // Ejecutar Lighthouse para Mobile
-    cy.lighthouse(thresholdsMobile, lighthouseConfigMobile).then((mobileResults) => {
-      cy.log("Mobile Results", JSON.stringify(mobileResults));
-      cy.writeFile('cypress/fixtures/metrics-mobile.json', mobileResults);
+    cy.lighthouse(thresholdsMobile, configMobile).then((mobileReport) => {
+      cy.log('Resultados Mobile:', mobileReport);  // Asegúrate de que esto muestre un informe válido
+      if (mobileReport) {
+        cy.writeFile('cypress/fixtures/lighthouse-mobile.json', mobileReport);
+      } else {
+        cy.log('No se generó el informe de Mobile');
+      }
     });
   });
 });
